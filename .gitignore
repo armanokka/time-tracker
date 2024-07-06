@@ -1,0 +1,7 @@
+postgres-data
+redis-data
+.env
+.github
+.idea
+effectiveMobile
+bin

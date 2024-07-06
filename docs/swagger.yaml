@@ -1,0 +1,1034 @@
+basePath: /api/
+definitions:
+  http.AddTaskMemberRequest:
+    properties:
+      user_id:
+        type: integer
+    type: object
+  http.LoginRequest:
+    properties:
+      email:
+        maxLength: 60
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - password
+    type: object
+  http.UpdateRequest:
+    properties:
+      address:
+        maxLength: 100
+        type: string
+      email:
+        maxLength: 60
+        type: string
+      name:
+        minLength: 2
+        type: string
+      passport_number:
+        type: integer
+      passport_series:
+        type: integer
+      password:
+        minLength: 6
+        type: string
+      patronymic:
+        maxLength: 60
+        minLength: 2
+        type: string
+      surname:
+        maxLength: 60
+        minLength: 2
+        type: string
+    type: object
+  httpErrors.RestError:
+    properties:
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+  models.Project:
+    properties:
+      creator_id:
+        type: integer
+      description:
+        maxLength: 1024
+        type: string
+      id:
+        type: integer
+      name:
+        maxLength: 64
+        type: string
+    type: object
+  models.Task:
+    properties:
+      description:
+        maxLength: 256
+        type: string
+      finished:
+        type: boolean
+      id:
+        type: integer
+      name:
+        maxLength: 64
+        type: string
+      project_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      address:
+        maxLength: 100
+        type: string
+      admin:
+        type: boolean
+      email:
+        maxLength: 60
+        type: string
+      id:
+        type: integer
+      name:
+        minLength: 2
+        type: string
+      passport_number:
+        type: integer
+      passport_series:
+        type: integer
+      password:
+        minLength: 6
+        type: string
+      patronymic:
+        type: string
+      surname:
+        maxLength: 60
+        minLength: 2
+        type: string
+    required:
+    - address
+    - name
+    - passport_number
+    - passport_series
+    - password
+    - surname
+    type: object
+  models.UserProductivity:
+    properties:
+      spent_hours:
+        type: integer
+      spent_minutes:
+        type: integer
+      task_id:
+        type: integer
+    type: object
+  models.UserWithToken:
+    properties:
+      address:
+        maxLength: 100
+        type: string
+      admin:
+        type: boolean
+      email:
+        maxLength: 60
+        type: string
+      id:
+        type: integer
+      name:
+        minLength: 2
+        type: string
+      passport_number:
+        type: integer
+      passport_series:
+        type: integer
+      password:
+        minLength: 6
+        type: string
+      patronymic:
+        type: string
+      surname:
+        maxLength: 60
+        minLength: 2
+        type: string
+      token:
+        type: string
+    required:
+    - address
+    - name
+    - passport_number
+    - passport_series
+    - password
+    - surname
+    type: object
+  utils.Response:
+    properties:
+      ok:
+        type: boolean
+    type: object
+  utils.UsersQuery:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      limit:
+        type: integer
+      maxID:
+        type: integer
+      maxPassportNumber:
+        type: integer
+      maxPassportSeries:
+        type: integer
+      minID:
+        type: integer
+      minPassportNumber:
+        type: integer
+      minPassportSeries:
+        type: integer
+      name:
+        type: string
+      page:
+        type: integer
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+  utils.UsersQueryResponse:
+    properties:
+      count:
+        type: integer
+      page:
+        type: integer
+      total_count:
+        type: integer
+      total_pages:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
+host: localhost:80
+info:
+  contact:
+    email: armangokka@gmail.com
+    name: API Support
+    url: https://t.me/armanokka
+  description: REST API for Effective Mobile
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Test task for Effective Mobile
+  version: "1.0"
+paths:
+  /projects/:
+    post:
+      consumes:
+      - application/json
+      description: Create project
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      - description: Project name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Project description
+        in: body
+        name: description
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Create project
+      tags:
+      - projects
+  /projects/{project_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete project
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Delete project
+      tags:
+      - projects
+    get:
+      description: Get project by ID
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Get project by ID
+      tags:
+      - projects
+    patch:
+      consumes:
+      - application/json
+      description: Update project info
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      - description: New project name
+        in: body
+        name: name
+        schema:
+          type: string
+      - description: New project description
+        in: body
+        name: description
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Update project info
+      tags:
+      - projects
+  /projects/{project_id}/tasks:
+    get:
+      description: Get project tasks
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Get project tasks
+      tags:
+      - tasks
+    post:
+      description: Create project task
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task to be created
+        in: body
+        name: taskBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Task'
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Create project task
+      tags:
+      - tasks
+  /projects/{project_id}/tasks/{task_id}:
+    delete:
+      description: Delete project task
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Delete project task
+      tags:
+      - tasks
+    patch:
+      description: Update project task
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: updates to the task
+        in: body
+        name: updatedTaskBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Task'
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Update project task
+      tags:
+      - tasks
+  /projects/{project_id}/tasks/{task_id}/start:
+    post:
+      description: Start doing project task
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Start doing project task
+      tags:
+      - tasks
+  /projects/{project_id}/tasks/{task_id}/stop:
+    post:
+      description: Stop doing project task
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Stop doing project task
+      tags:
+      - tasks
+  /projects/{project_id}/tasks/{task_id}/users:
+    get:
+      description: Get task executors
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Get task executors
+      tags:
+      - tasks
+    post:
+      description: Add task executor
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      - description: add executor request body
+        in: body
+        name: addExecutorRequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/http.AddTaskMemberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Add task executor
+      tags:
+      - tasks
+  /projects/{project_id}/tasks/{task_id}/users/{user_id}:
+    delete:
+      description: Remove task executor
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: task id
+        in: path
+        name: task_id
+        required: true
+        type: string
+      - description: executor id to be removed
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Remove task executor
+      tags:
+      - tasks
+  /projects/{project_id}/users:
+    get:
+      description: Get project members list
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Get project members list
+      tags:
+      - projects
+    post:
+      description: Remove project member
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: id of the user you want to remove
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Remove project member
+      tags:
+      - projects
+  /projects/{project_id}/users/{user_id}:
+    get:
+      description: Get project member productivity
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: project id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserProductivity'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Get project member productivity
+      tags:
+      - projects
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register user
+      parameters:
+      - description: new user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserWithToken'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Register user
+      tags:
+      - auth
+  /users/:
+    get:
+      description: Search users
+      parameters:
+      - description: search query
+        in: body
+        name: searchUserQuery
+        required: true
+        schema:
+          $ref: '#/definitions/utils.UsersQuery'
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.UsersQueryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Search users
+      tags:
+      - auth
+  /users/{user_id}:
+    delete:
+      description: Delete user
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Delete user
+      tags:
+      - auth
+    get:
+      description: Login user
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Login user
+      tags:
+      - auth
+    patch:
+      consumes:
+      - application/json
+      description: Update user
+      parameters:
+      - description: new user info
+        in: body
+        name: updateBody
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateRequest'
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Update user
+      tags:
+      - auth
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: email and password json object
+        in: body
+        name: searchUserQuery
+        required: true
+        schema:
+          $ref: '#/definitions/http.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserWithToken'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Login user
+      tags:
+      - auth
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
+tags:
+- description: Auth section
+  name: auth
+- description: Projects section
+  name: projects
+- description: Tasks section
+  name: tasks
