@@ -64,7 +64,7 @@ func (m Manager) ParsePathParametersMiddleware() gin.HandlerFunc {
 		if c.Param("project_id") != "" {
 			projectID, err := strconv.ParseInt(c.Param("project_id"), 10, 64)
 			if err != nil {
-				m.log.Errorf("Error c.Get(user) RequestID: %s, ERROR: %s,", requestid.Get(c), "invalid project_id")
+				m.log.Errorf("Error c.Param(project_id) RequestID: %s, ERROR: %s,", requestid.Get(c), "invalid project_id")
 				c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
 				return
 			}
@@ -73,7 +73,7 @@ func (m Manager) ParsePathParametersMiddleware() gin.HandlerFunc {
 		if c.Param("user_id") != "" {
 			userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 			if err != nil {
-				m.log.Errorf("Error c.Get(user) RequestID: %s, ERROR: %s,", requestid.Get(c), "invalid user_id")
+				m.log.Errorf("Error c.Param(user_id) RequestID: %s, ERROR: %s,", requestid.Get(c), "invalid user_id")
 				c.AbortWithStatusJSON(http.StatusBadRequest, httpErrors.NewBadRequestError(httpErrors.BadRequest))
 				return
 			}
@@ -82,7 +82,7 @@ func (m Manager) ParsePathParametersMiddleware() gin.HandlerFunc {
 		if c.Param("task_id") != "" {
 			taskID, err := strconv.ParseInt(c.Param("task_id"), 10, 64)
 			if err != nil {
-				m.log.Errorf("Error c.Get(user) RequestID: %s, ERROR: %s,", requestid.Get(c), "invalid task_id")
+				m.log.Errorf("Error c.Param(task_id) RequestID: %s, ERROR: %s,", requestid.Get(c), "invalid task_id")
 				c.AbortWithStatusJSON(http.StatusBadRequest, httpErrors.NewBadRequestError(httpErrors.BadRequest))
 				return
 			}
