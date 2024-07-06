@@ -27,5 +27,4 @@ INNER JOIN task_participant ON task_participant.user_id = "user".id
 WHERE task_id = $1`
 	addTaskMemberQuery    = `INSERT INTO task_participant (task_id, user_id) VALUES ($1, $2)`
 	deleteTaskMemberQuery = `DELETE FROM task_participant WHERE task_id = $1 AND user_id = $2`
-	taskExistsQuery       = `SELECT EXISTS (SELECT 1 FROM task WHERE id = $1)`
 )

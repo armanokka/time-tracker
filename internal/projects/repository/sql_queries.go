@@ -14,7 +14,7 @@ WHERE id = $4
 RETURNING *`
 
 	isProjectMemberQuery = `SELECT FROM project_participant WHERE project_id = $1 AND user_id = $2`
-	isProjectOwnerQuery  = `SELECT EXISTS (SELECT 1 FROM project WHERE id = $1 AND creator_id = $2)`
+	isProjectOwnerQuery  = `SELECT FROM project WHERE id = $1 AND creator_id = $2`
 
 	getProjectMembersCount = `SELECT COUNT(user_id) FROM project_participant WHERE project_id = $1`
 	getProjectMembers      = `SELECT * FROM "user" 
