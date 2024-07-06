@@ -17,7 +17,7 @@ RETURNING *`
 	isProjectOwnerQuery  = `SELECT FROM project WHERE id = $1 AND creator_id = $2`
 
 	getProjectMembersCount = `SELECT COUNT(user_id) FROM project_participant WHERE project_id = $1`
-	getProjectMembers      = `SELECT * FROM "user" 
+	getProjectMembers      = `SELECT "user".* FROM "user" 
 INNER JOIN project_participant ON "user".id = project_participant.user_id
 WHERE project_id = $1`
 	addProjectMemberQuery             = `INSERT INTO project_participant (project_id, user_id) VALUES ($1, $2)`
