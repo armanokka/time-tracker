@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"github.com/armanokka/test_task_Effective_mobile/internal/models"
 	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
 	"github.com/jmoiron/sqlx"
@@ -37,18 +38,25 @@ func (c projectsRepo) GetByID(ctx context.Context, projectID int64) (*models.Pro
 	ctx, span := c.tracer.Start(ctx, "projectsRepo.GetProjectByID")
 	defer span.End()
 
-	var project models.Project
-	if err := c.db.QueryRowxContext(ctx, getProjectByIDQuery, projectID).StructScan(&project); err != nil {
-		return nil, err
-	}
-	return &project, nil
+	project := &models.Project{}
+	return project, c.db.QueryRowxContext(ctx, getProjectByIDQuery, projectID).StructScan(project)
 }
 
 func (c projectsRepo) Delete(ctx context.Context, projectID int64) error {
 	ctx, span := c.tracer.Start(ctx, "projectsRepo.DeleteProject")
 	defer span.End()
 
-	_, err := c.db.ExecContext(ctx, deleteProjectQuery, projectID)
+	result, err := c.db.ExecContext(ctx, deleteProjectQuery, projectID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 
@@ -56,26 +64,44 @@ func (c projectsRepo) Update(ctx context.Context, updatedProject *models.Project
 	ctx, span := c.tracer.Start(ctx, "projectsRepo.UpdateProject")
 	defer span.End()
 
-	var project models.Project
-	if err := c.db.QueryRowxContext(ctx, updateProjectQuery, updatedProject.Name, updatedProject.Description,
-		updatedProject.CreatorID, updatedProject.ID).StructScan(&project); err != nil {
-		return nil, err
+	return updatedProject, c.db.QueryRowxContext(ctx, updateProjectQuery, updatedProject.Name, updatedProject.Description,
+		updatedProject.CreatorID, updatedProject.ID).StructScan(updatedProject)
+}
+
+func (c projectsRepo) IsMember(ctx context.Context, projectID, userID int64) error {
+	ctx, span := c.tracer.Start(ctx, "projectsRepo.IsProjectMember")
+	defer span.End()
+
+	result, err := c.db.ExecContext(ctx, isProjectMemberQuery, projectID, userID)
+	if err != nil {
+		return err
 	}
-	return &project, nil
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
-func (c projectsRepo) IsMember(ctx context.Context, projectID, userID int64) (member bool, err error) {
+func (c projectsRepo) IsOwner(ctx context.Context, projectID, userID int64) error {
 	ctx, span := c.tracer.Start(ctx, "projectsRepo.IsProjectMember")
 	defer span.End()
 
-	return member, c.db.QueryRowxContext(ctx, isProjectMemberQuery, projectID, userID).Scan(&member)
-}
-
-func (c projectsRepo) IsOwner(ctx context.Context, projectID, userID int64) (member bool, err error) {
-	ctx, span := c.tracer.Start(ctx, "projectsRepo.IsProjectMember")
-	defer span.End()
-
-	return member, c.db.QueryRowxContext(ctx, isProjectOwnerQuery, projectID, userID).Scan(&member)
+	result, err := c.db.ExecContext(ctx, isProjectOwnerQuery, projectID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (c projectsRepo) AddMember(ctx context.Context, projectID, userID int64) error {
@@ -90,8 +116,18 @@ func (c projectsRepo) RemoveMember(ctx context.Context, projectID, userID int64)
 	ctx, span := c.tracer.Start(ctx, "projectsRepo.RemoveProjectMember")
 	defer span.End()
 
-	_, err := c.db.ExecContext(ctx, removeProjectMemberQuery, userID, projectID)
-	return err
+	result, err := c.db.ExecContext(ctx, removeProjectMemberQuery, projectID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (c projectsRepo) GetMembers(ctx context.Context, projectID int64) ([]*models.User, error) {
@@ -142,7 +178,6 @@ func (c projectsRepo) GetMemberProductivity(ctx context.Context, projectID, user
 		}{}
 		if err = rows.StructScan(&result); err != nil {
 			return nil, err
-
 		}
 		hours, minutes := getHoursMinutes(int(result.TotalSeconds))
 

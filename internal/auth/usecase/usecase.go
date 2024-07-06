@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-const cacheTimeSeconds = 60 * 5
+const cacheTimeSeconds = 60 * 10
 
 type authUC struct {
 	cfg       config.ServerConfig

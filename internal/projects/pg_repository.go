@@ -11,8 +11,8 @@ type Repository interface {
 	Update(ctx context.Context, updates *models.Project) (*models.Project, error)
 	Delete(ctx context.Context, projectID int64) error
 
-	IsOwner(ctx context.Context, projectID, userID int64) (bool, error)
-	IsMember(ctx context.Context, projectID, userID int64) (bool, error)
+	IsOwner(ctx context.Context, projectID, userID int64) error
+	IsMember(ctx context.Context, projectID, userID int64) error
 
 	GetMembers(ctx context.Context, projectID int64) ([]*models.User, error)
 	AddMember(ctx context.Context, projectID, userID int64) error
@@ -32,5 +32,5 @@ type TasksRepository interface {
 	GetMembers(ctx context.Context, taskID int64) ([]*models.User, error)
 	AddMember(ctx context.Context, taskID, userID int64) error
 	DeleteMember(ctx context.Context, taskID, userID int64) error
-	IsMember(ctx context.Context, taskID, userID int64) (bool, error)
+	IsMember(ctx context.Context, taskID, userID int64) error
 }

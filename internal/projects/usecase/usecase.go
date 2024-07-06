@@ -85,14 +85,14 @@ func (c projectsUC) Update(ctx context.Context, updates *models.Project) (*model
 	return updatedProject, nil
 }
 
-func (c projectsUC) IsOwner(ctx context.Context, projectID, userID int64) (bool, error) {
+func (c projectsUC) IsOwner(ctx context.Context, projectID, userID int64) error {
 	ctx, span := c.tracer.Start(ctx, "projectsUC.IsProjectOwner")
 	defer span.End()
 
 	return c.repo.IsOwner(ctx, projectID, userID)
 }
 
-func (c projectsUC) IsMember(ctx context.Context, projectID, userID int64) (bool, error) {
+func (c projectsUC) IsMember(ctx context.Context, projectID, userID int64) error {
 	ctx, span := c.tracer.Start(ctx, "projectsUC.IsProjectMember")
 	defer span.End()
 

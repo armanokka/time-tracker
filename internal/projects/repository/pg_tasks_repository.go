@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/armanokka/test_task_Effective_mobile/internal/models"
 	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
@@ -67,7 +66,17 @@ func (t tasksRepository) Delete(ctx context.Context, taskID int64) error {
 	ctx, span := t.tracer.Start(ctx, "tasksRepository.Delete")
 	defer span.End()
 
-	_, err := t.db.ExecContext(ctx, deleteTaskQuery, taskID)
+	result, err := t.db.ExecContext(ctx, deleteTaskQuery, taskID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 
@@ -83,7 +92,17 @@ func (t tasksRepository) Start(ctx context.Context, taskID, userID int64) error 
 		return fmt.Errorf("task already started")
 	}
 
-	_, err := t.db.ExecContext(ctx, startTaskQuery, taskID, userID)
+	result, err := t.db.ExecContext(ctx, startTaskQuery, taskID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 
@@ -91,7 +110,17 @@ func (t tasksRepository) Stop(ctx context.Context, taskID, userID int64) error {
 	ctx, span := t.tracer.Start(ctx, "tasksRepository.Stop")
 	defer span.End()
 
-	_, err := t.db.ExecContext(ctx, endTaskQuery, taskID, userID)
+	result, err := t.db.ExecContext(ctx, endTaskQuery, taskID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 
@@ -129,8 +158,16 @@ func (t tasksRepository) AddMember(ctx context.Context, taskID, userID int64) er
 	ctx, span := t.tracer.Start(ctx, "tasksRepository.AddMember")
 	defer span.End()
 
-	_, err := t.db.ExecContext(ctx, addTaskMemberQuery, taskID, userID)
+	result, err := t.db.ExecContext(ctx, addTaskMemberQuery, taskID, userID)
 	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
 	}
 	return err
 }
@@ -139,17 +176,31 @@ func (t tasksRepository) DeleteMember(ctx context.Context, taskID, userID int64)
 	ctx, span := t.tracer.Start(ctx, "tasksRepository.AddMember")
 	defer span.End()
 
-	_, err := t.db.ExecContext(ctx, deleteTaskMemberQuery, taskID, userID)
+	result, err := t.db.ExecContext(ctx, deleteTaskMemberQuery, taskID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 
-func (t tasksRepository) IsMember(ctx context.Context, taskID, userID int64) (bool, error) {
-	err := t.db.QueryRowxContext(ctx, isTaskMemberQuery, taskID, userID).Err()
-	if err == nil {
-		return true, nil
+func (t tasksRepository) IsMember(ctx context.Context, taskID, userID int64) error {
+	result, err := t.db.ExecContext(ctx, isTaskMemberQuery, taskID, userID)
+	if err != nil {
+		return err
 	}
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
 	}
-	return false, err
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
