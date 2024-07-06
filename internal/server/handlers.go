@@ -28,7 +28,8 @@ func (s Server) MapHandlers(c *gin.RouterGroup) {
 	tasksHandlers := projectsHttp.NewTasksHandlers(tasksUC, s.logger)                        // tasks handlers
 
 	mw := middleware.NewMiddlewareManager(s.cfg.Server, []string{"*"}, s.logger, aUseCase, projectsUC, tasksUC)
+	s.router.Use(mw.ParsePathParametersMiddleware())
 
 	authHttp.MapAuthRoutes(c.Group("/users"), authHandlers, mw)
-	projectsHttp.MapRoutes(c.Group("/projects"), projectsHandlers, tasksHandlers, mw)
+	projectsHttp.MapProjectsTasksRoutes(c.Group("/projects"), projectsHandlers, tasksHandlers, mw)
 }

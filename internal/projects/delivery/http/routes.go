@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MapRoutes(projectsGroup *gin.RouterGroup, project projects.Handlers, task projects.TaskHandlers, mw middleware.Manager) {
+func MapProjectsTasksRoutes(projectsGroup *gin.RouterGroup, project projects.Handlers, task projects.TaskHandlers, mw middleware.Manager) {
 	projectsGroup.Use(mw.AuthJWTMiddleware())
 	projectsGroup.POST("/", project.Create())
 	projectsGroup.GET("/:project_id", mw.OwnerOrAdminMiddleware(), project.GetByID())
