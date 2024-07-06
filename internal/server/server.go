@@ -48,7 +48,7 @@ func (s Server) Run(ctx context.Context) error {
 	}
 
 	go func() {
-		s.logger.Infof("Server is listening on PORT: %s", s.cfg.Server.Port)
+		s.logger.Infof("Server is listening on PORT: %d", s.cfg.Server.Port)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			s.logger.Fatalf("Error starting Server: ", err)
 		}

@@ -7,7 +7,7 @@ import (
 )
 
 func MapProjectsTasksRoutes(projectsGroup *gin.RouterGroup, project projects.Handlers, task projects.TaskHandlers, mw middleware.Manager) {
-	projectsGroup.Use(mw.AuthJWTMiddleware())
+	projectsGroup.Use(mw.AuthJWTMiddleware(), mw.ParsePathParametersMiddleware())
 	projectsGroup.POST("/", project.Create())
 	projectsGroup.GET("/:project_id", mw.OwnerOrAdminMiddleware(), project.GetByID())
 	projectsGroup.PATCH("/:project_id", mw.OwnerOrAdminMiddleware(), project.Update())

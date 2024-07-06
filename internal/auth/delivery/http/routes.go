@@ -7,6 +7,7 @@ import (
 )
 
 func MapAuthRoutes(authGroup *gin.RouterGroup, h auth.Handlers, mw middleware.Manager) {
+	authGroup.Use(mw.ParsePathParametersMiddleware())
 	authGroup.GET("/", mw.AuthJWTMiddleware(), h.SearchUsers())
 	authGroup.POST("/", h.Register())
 	authGroup.POST("/login", h.Login())
