@@ -19,7 +19,7 @@ Edit `.env.dev` file according to your credentials. Then rename `.env.dev` to `.
 http://localhost/swagger/index.html
 
 ### Jaeger UI
-http://188.225.74.17:16686/
+http://localhost:16686/
 
 ### Full list of what hass been used:
 * [clean architecture](https://github.com/evrone/go-clean-template) - clean Architecture template for Golang services

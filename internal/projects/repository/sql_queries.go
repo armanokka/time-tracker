@@ -20,7 +20,7 @@ RETURNING *`
 	getProjectMembers      = `SELECT * FROM "user" 
 INNER JOIN project_participant ON "user".id = project_participant.user_id
 WHERE project_id = $1`
-	addProjectMemberQuery             = `INSERT INTO project_participant (project_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING `
+	addProjectMemberQuery             = `INSERT INTO project_participant (project_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 	removeProjectMemberQuery          = `DELETE FROM project_participant  WHERE user_id = $1 AND project_id = $2`
 	getProjectMemberProductivityQuery = `SELECT task_id, SUM(EXTRACT(EPOCH FROM (time_entry.ended_at - started_at))) 
 AS total_seconds FROM time_entry
