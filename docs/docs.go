@@ -1073,14 +1073,14 @@ const docTemplate = `{
         },
         "/users/{user_id}": {
             "get": {
-                "description": "Login user",
+                "description": "Get user by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "auth"
                 ],
-                "summary": "Login user",
+                "summary": "Get user by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -1466,22 +1466,22 @@ const docTemplate = `{
                 "limit": {
                     "type": "integer"
                 },
-                "maxID": {
+                "max_id": {
                     "type": "integer"
                 },
-                "maxPassportNumber": {
+                "max_passport_number": {
                     "type": "integer"
                 },
-                "maxPassportSeries": {
+                "max_passport_series": {
                     "type": "integer"
                 },
-                "minID": {
+                "min_id": {
                     "type": "integer"
                 },
-                "minPassportNumber": {
+                "min_passport_number": {
                     "type": "integer"
                 },
-                "minPassportSeries": {
+                "min_passport_series": {
                     "type": "integer"
                 },
                 "name": {

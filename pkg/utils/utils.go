@@ -56,19 +56,19 @@ type UsersQueryResponse struct {
 }
 
 type UsersQuery struct {
-	MinID             int    `form:"min_id"`
-	MaxID             int    `form:"max_id"`
-	Email             string `form:"email"`
-	Name              string `form:"name"`
-	Surname           string `form:"surname"`
-	Patronymic        string `form:"patronymic"`
-	Address           string `form:"address"`
-	MaxPassportNumber int    `form:"max_passport_number"`
-	MinPassportNumber int    `form:"min_passport_number"`
-	MaxPassportSeries int    `form:"max_passport_series"`
-	MinPassportSeries int    `form:"min_passport_series"`
-	Limit             int    `form:"limit"`
-	Page              int    `form:"page"`
+	MinID             int    `json:"min_id" form:"min_id"`
+	MaxID             int    `json:"max_id" form:"max_id"`
+	Email             string `json:"email" form:"email"`
+	Name              string `json:"name" form:"name"`
+	Surname           string `json:"surname" form:"surname"`
+	Patronymic        string `json:"patronymic" form:"patronymic"`
+	Address           string `json:"address" form:"address"`
+	MaxPassportNumber int    `json:"max_passport_number" form:"max_passport_number"`
+	MinPassportNumber int    `json:"min_passport_number" form:"min_passport_number"`
+	MaxPassportSeries int    `json:"max_passport_series" form:"max_passport_series"`
+	MinPassportSeries int    `json:"min_passport_series" form:"min_passport_series"`
+	Limit             int    `json:"limit" form:"limit"`
+	Page              int    `json:"page" form:"page"`
 }
 
 func (u UsersQuery) GetLimit() int {
