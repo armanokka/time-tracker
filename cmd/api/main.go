@@ -84,7 +84,7 @@ func main() {
 	otel.SetTracerProvider(otel.GetTracerProvider()) // setting global tracer provider
 
 	// Connecting to Postgres
-	db, err := postgres.NewPsqlDB(ctx, cfg)
+	db, err := postgres.NewPsqlDB(ctx, &cfg.Postgres)
 	if err != nil {
 		panic(err)
 	}
