@@ -1,9 +1,5 @@
 init: build run
 
-migrate:
-	docker-compose start postgresql
-	migrate -database "postgresql://user:password@localhost:5432/database?sslmode=disable" -path ./migrations/ up 1
-
 migrate_up:
 	migrate -database "postgresql://user:password@localhost:5432/database?sslmode=disable" -path ./migrations/ up 1
 

@@ -1,12 +1,11 @@
-# Effective Mobile test task
+# Time tracker backend API
 
 ### Documentation
 Swagger documentation is located in `docs` folder
 
 ### Running
-Edit `.env.dev` file according to your credentials. Then rename `.env.dev` to `.env`. Finally run:
+Edit `.env.dev` file according to your credentials. Then rename it to `.env`. Finally, run:
 
-    make migrate
     make init
 
 ### Requirements
