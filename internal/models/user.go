@@ -7,14 +7,14 @@ import (
 )
 
 type User struct {
-	ID             int64   `json:"id" db:"id"`
+	ID             int64   `json:"id" db:"id" validate:"omitempty"`
 	Email          string  `json:"email" db:"email" validate:"omitempty,lte=60,email"`
 	Password       string  `json:"password,omitempty" db:"password" validate:"required,gte=6"`
 	Name           string  `json:"name" db:"name" validate:"required,gte=2"`
 	Surname        string  `json:"surname" db:"surname" validate:"required,gte=2,lte=60"`
 	Patronymic     *string `json:"patronymic" db:"patronymic" validate:"omitempty"`
 	Address        string  `json:"address" db:"address" validate:"required,lte=100"`
-	Admin          bool    `json:"admin,omitempty" db:"admin"`
+	Admin          bool    `json:"admin,omitempty" db:"admin" validate:"omitempty"`
 	PassportNumber int     `json:"passport_number,omitempty" db:"passport_number" validate:"required"`
 	PassportSeries int     `json:"passport_series,omitempty" db:"passport_series" validate:"required"`
 }

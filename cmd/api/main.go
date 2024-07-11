@@ -23,6 +23,12 @@ import (
 	"time"
 )
 
+/*
+1. Миграции можно накатывать с помощью либ при старте приложения. Так удастся избежать конфликта между БД и кодовой базой [+]
+5. Нет возможности обновить на пустое значение
+6. info- и debug-логов мало
+*/
+
 // @title           Test task for Effective Mobile
 // @version         1.0
 // @description     REST API for Effective Mobile
