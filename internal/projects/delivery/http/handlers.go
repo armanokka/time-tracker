@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
-	"strconv"
 )
 
 type projectHandlers struct {
@@ -46,12 +45,7 @@ func (h projectHandlers) GetByID() gin.HandlerFunc {
 		ctx, span := h.tracer.Start(c.MustGet(utils.UserCtxKey).(context.Context), "projectHandlers.GetByID")
 		defer span.End()
 
-		projectID, err := strconv.ParseInt(c.Param("project_id"), 10, 64)
-		if err != nil {
-			utils.LogResponseError(c, h.log, err)
-			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
-			return
-		}
+		projectID := c.GetInt64("project_id")
 
 		project, err := h.projectsUC.GetByID(ctx, projectID)
 		if err != nil {
@@ -227,12 +221,7 @@ func (h projectHandlers) RemoveMember() gin.HandlerFunc {
 
 		projectID := c.GetInt64("project_id")
 
-		userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-		if err != nil {
-			utils.LogResponseError(c, h.log, err)
-			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
-			return
-		}
+		userID := c.GetInt64("user_id")
 
 		if err := h.projectsUC.RemoveMember(ctx, projectID, userID); err != nil {
 			utils.LogResponseError(c, h.log, err)

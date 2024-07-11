@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
-	"strconv"
 )
 
 type authHandlers struct {
@@ -114,14 +113,9 @@ func (a authHandlers) GetUserByID() gin.HandlerFunc {
 
 		userID := c.MustGet("user").(*models.User).ID
 
-		paramUserID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-		if err != nil {
-			utils.LogResponseError(c, a.log, err)
-			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
-			return
-		}
+		paramUserID := c.GetInt64("user_id")
 
-		user, err := a.authUC.GetByID(ctx, paramUserID)
+		user, err := a.authUC.GetByID(ctx, userID)
 		if err != nil {
 			utils.LogResponseError(c, a.log, err)
 			c.AbortWithStatusJSON(404, httpErrors.NewNoSuchUserError(err))
@@ -153,12 +147,7 @@ func (a authHandlers) Update() gin.HandlerFunc {
 		ctx, span := a.tracer.Start(c.MustGet(utils.UserCtxKey).(context.Context), "authHandlers.Update")
 		defer span.End()
 
-		userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-		if err != nil {
-			utils.LogResponseError(c, a.log, err)
-			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
-			return
-		}
+		userID := c.GetInt64("user_id")
 
 		update := &UpdateRequest{}
 		if err := utils.ReadRequest(c, update); err != nil {
@@ -168,15 +157,13 @@ func (a authHandlers) Update() gin.HandlerFunc {
 		}
 
 		updatedUser, err := a.authUC.Update(ctx, &models.User{
-			ID:             userID,
-			Email:          update.Email,
-			Password:       update.Password,
-			Name:           update.Name,
-			Surname:        update.Surname,
-			Patronymic:     update.Patronymic,
-			Address:        update.Address,
-			PassportNumber: update.PassportNumber,
-			PassportSeries: update.PassportSeries,
+			ID:         userID,
+			Email:      update.Email,
+			Password:   update.Password,
+			Name:       update.Name,
+			Surname:    update.Surname,
+			Patronymic: &update.Patronymic,
+			Address:    &update.Address,
 		})
 		if err != nil {
 			utils.LogResponseError(c, a.log, err)
@@ -204,14 +191,9 @@ func (a authHandlers) Delete() gin.HandlerFunc {
 		ctx, span := a.tracer.Start(c.MustGet(utils.UserCtxKey).(context.Context), "authHandlers.Delete")
 		defer span.End()
 
-		userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-		if err != nil {
-			utils.LogResponseError(c, a.log, err)
-			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
-			return
-		}
+		userID := c.GetInt64("user_id")
 
-		if err = a.authUC.Delete(ctx, userID); err != nil {
+		if err := a.authUC.Delete(ctx, userID); err != nil {
 			utils.LogResponseError(c, a.log, err)
 			c.AbortWithStatusJSON(500, httpErrors.ParseErrors(err))
 			return

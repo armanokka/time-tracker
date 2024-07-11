@@ -2,9 +2,7 @@ package usecase
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/armanokka/test_task_Effective_mobile/config"
 	"github.com/armanokka/test_task_Effective_mobile/internal/auth"
 	"github.com/armanokka/test_task_Effective_mobile/internal/models"
@@ -13,10 +11,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
-	"io"
-	"net/http"
-	"net/url"
-	"strconv"
+	"strings"
 	"time"
 )
 
@@ -91,43 +86,10 @@ func (a authUC) Register(ctx context.Context, user *models.User) (*models.UserWi
 		return nil, err
 	}
 
-	// При добавлении сделаем запрос в АПИ, описанный сваггером
-	//if err = a.request(user); err != nil {
-	//	return nil, err
-	//}
-
 	return &models.UserWithToken{
 		User:  user,
 		Token: jwtToken,
 	}, nil
-}
-
-func (a authUC) request(user *models.User) error {
-	params := url.Values{}
-	params.Set("passportSerie", strconv.Itoa(user.PassportSeries))
-	params.Set("passportNumber", strconv.Itoa(user.PassportNumber))
-	req, err := http.NewRequest("GET", "/info?"+params.Encode(), nil)
-	if err != nil {
-		return err
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("authUC.request: not 200 status code [%d]", resp.StatusCode)
-	}
-
-	var person models.People // Вот модель People, как просили в ТЗ
-	if err = json.Unmarshal(body, &person); err != nil {
-		return err
-	}
-	// что-то делаем с person
-	return nil
 }
 
 func (a authUC) GetByID(ctx context.Context, userID int64) (*models.User, error) {
@@ -155,8 +117,9 @@ func (a authUC) GetByEmail(ctx context.Context, email string) (*models.User, err
 	ctx, span := a.tracer.Start(ctx, "authUC.GetByEmail")
 	defer span.End()
 
-	return a.authRepo.GetByEmail(ctx, email)
+	return a.authRepo.GetByEmail(ctx, strings.ToLower(strings.TrimSpace(email)))
 }
+
 func (a authUC) Update(ctx context.Context, user *models.User) (*models.User, error) {
 	ctx, span := a.tracer.Start(ctx, "authUC.Update")
 	defer span.End()

@@ -9,17 +9,12 @@ create table "user"
     name            text   not null,
     surname         text   not null,
     patronymic      text,
-    address         text   not null,
-    admin bool not null default false,
-    passport_number bigint not null,
-    passport_series bigint not null
+    address         text,
+    admin bool not null default false
 );
 
 -- alter table user
 --     owner to effective_mobile;
-
-create unique index passport_info_idx
-    on "user" (passport_number, passport_series);
 
 
 

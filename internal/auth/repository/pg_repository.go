@@ -24,7 +24,7 @@ func (c authRepository) Create(ctx context.Context, user *models.User) (*models.
 	defer span.End()
 
 	return user, c.client.QueryRowxContext(ctx, createUserQuery, user.Email, user.Password, user.Name,
-		user.Surname, user.Patronymic, user.Address, user.PassportNumber, user.PassportSeries).StructScan(user)
+		user.Surname, user.Patronymic, user.Address).StructScan(user)
 }
 
 func (c authRepository) GetByID(ctx context.Context, id int64) (user *models.User, err error) {
@@ -58,23 +58,20 @@ func (c authRepository) Update(ctx context.Context, updates *models.User) (*mode
 	defer span.End()
 
 	return updates, c.client.QueryRowxContext(ctx, updateUserQuery, &updates.Email, &updates.Password, &updates.Name,
-		&updates.Surname, &updates.Patronymic, &updates.Address, &updates.PassportNumber,
-		&updates.PassportSeries, &updates.ID).StructScan(updates)
+		&updates.Surname, &updates.Patronymic, &updates.Address, &updates.ID).StructScan(updates)
 }
 
 func (c authRepository) SearchUsers(ctx context.Context, query *utils.UsersQuery) (utils.UsersQueryResponse, error) {
 	var totalCount int
 	if err := c.client.GetContext(ctx, &totalCount, searchUsersCountQuery,
 		query.MinID, query.MaxID, query.Email, query.Name, query.Surname, query.Patronymic,
-		query.Address, query.MinPassportNumber, query.MaxPassportNumber,
-		query.MinPassportSeries, query.MaxPassportSeries); err != nil {
+		query.Address); err != nil {
 		return utils.UsersQueryResponse{}, err
 	}
 
 	rows, err := c.client.QueryxContext(ctx, searchUsersQuery,
 		query.MinID, query.MaxID, query.Email, query.Name, query.Surname, query.Patronymic,
-		query.Address, query.MinPassportNumber, query.MaxPassportNumber,
-		query.MinPassportSeries, query.MaxPassportSeries, query.GetOffset(), query.GetLimit()) // todo FIX COALESCE query
+		query.Address, query.GetOffset(), query.GetLimit())
 	if err != nil {
 		return utils.UsersQueryResponse{}, err
 	}
