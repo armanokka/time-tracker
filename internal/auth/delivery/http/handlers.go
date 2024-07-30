@@ -202,7 +202,15 @@ func (a authHandlers) Delete() gin.HandlerFunc {
 // @Description  Search users
 // @Tags		 auth
 // @Produce      json
-// @Param		 searchUserQuery body  utils.UsersQuery true "search query"
+// @Param		 min_id path integer false "min id"
+// @Param		 max_id path integer false "max id"
+// @Param		 email path string false "email"
+// @Param		 name path string false "name"
+// @Param		 surname path string false "surname"
+// @Param		 patronymic path string false "patronymic"
+// @Param		 address path string false "address"
+// @Param		 limit path integer false "results amount limit"
+// @Param		 page path integer  false "page"
 // @Param        X-Access-Token header string true "Token that you get after authorization/registration"
 // @Success      200  {object}  utils.UsersQueryResponse
 // @Failure      400  {object}  httpErrors.RestError

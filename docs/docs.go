@@ -1022,13 +1022,58 @@ const docTemplate = `{
                 "summary": "Search users",
                 "parameters": [
                     {
-                        "description": "search query",
-                        "name": "searchUserQuery",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/utils.UsersQuery"
-                        }
+                        "type": "integer",
+                        "description": "min id",
+                        "name": "min_id",
+                        "in": "path"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "max id",
+                        "name": "max_id",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "surname",
+                        "name": "surname",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "patronymic",
+                        "name": "patronymic",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "results amount limit",
+                        "name": "limit",
+                        "in": "path"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "path"
                     },
                     {
                         "type": "string",
@@ -1473,38 +1518,6 @@ const docTemplate = `{
             "properties": {
                 "ok": {
                     "type": "boolean"
-                }
-            }
-        },
-        "utils.UsersQuery": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "max_id": {
-                    "type": "integer"
-                },
-                "min_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "patronymic": {
-                    "type": "string"
-                },
-                "surname": {
-                    "type": "string"
                 }
             }
         },

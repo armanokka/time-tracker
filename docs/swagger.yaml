@@ -152,27 +152,6 @@ definitions:
       ok:
         type: boolean
     type: object
-  utils.UsersQuery:
-    properties:
-      address:
-        type: string
-      email:
-        type: string
-      limit:
-        type: integer
-      max_id:
-        type: integer
-      min_id:
-        type: integer
-      name:
-        type: string
-      page:
-        type: integer
-      patronymic:
-        type: string
-      surname:
-        type: string
-    type: object
   utils.UsersQueryResponse:
     properties:
       count:
@@ -866,12 +845,42 @@ paths:
     get:
       description: Search users
       parameters:
-      - description: search query
-        in: body
-        name: searchUserQuery
-        required: true
-        schema:
-          $ref: '#/definitions/utils.UsersQuery'
+      - description: min id
+        in: path
+        name: min_id
+        type: integer
+      - description: max id
+        in: path
+        name: max_id
+        type: integer
+      - description: email
+        in: path
+        name: email
+        type: string
+      - description: name
+        in: path
+        name: name
+        type: string
+      - description: surname
+        in: path
+        name: surname
+        type: string
+      - description: patronymic
+        in: path
+        name: patronymic
+        type: string
+      - description: address
+        in: path
+        name: address
+        type: string
+      - description: results amount limit
+        in: path
+        name: limit
+        type: integer
+      - description: page
+        in: path
+        name: page
+        type: integer
       - description: Token that you get after authorization/registration
         in: header
         name: X-Access-Token
