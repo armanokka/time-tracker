@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/internal/projects"
 	"github.com/jmoiron/sqlx"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"

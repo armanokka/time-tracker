@@ -41,33 +41,18 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "project id",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Token that you get after authorization/registration",
                         "name": "X-Access-Token",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "Project name",
-                        "name": "name",
+                        "description": "Project",
+                        "name": "project",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Project description",
-                        "name": "description",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Project"
                         }
                     }
                 ],
@@ -217,19 +202,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "New project name",
-                        "name": "name",
+                        "description": "Project updates",
+                        "name": "project_updates",
                         "in": "body",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "New project description",
-                        "name": "description",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Project"
                         }
                     }
                 ],
@@ -821,14 +798,17 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Remove project member",
+                "description": "Add project member",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "projects"
                 ],
-                "summary": "Remove project member",
+                "summary": "Add project member",
                 "parameters": [
                     {
                         "type": "string",
@@ -839,17 +819,19 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "id of the user you want to remove",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Token that you get after authorization/registration",
                         "name": "X-Access-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "User id of the member you want to invite",
+                        "name": "user_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -912,6 +894,59 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.UserProductivity"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpErrors.RestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpErrors.RestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove project member",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Remove project member",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "project id",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of the user you want to remove",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token that you get after authorization/registration",
+                        "name": "X-Access-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
                         }
                     },
                     "400": {
@@ -1178,12 +1213,19 @@ const docTemplate = `{
                 "summary": "Update user",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new user info",
                         "name": "updateBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateRequest"
+                            "$ref": "#/definitions/http.UpdateUserRequest"
                         }
                     },
                     {
@@ -1242,7 +1284,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.UpdateRequest": {
+        "http.UpdateUserRequest": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1255,16 +1297,12 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 60,
                     "minLength": 2
-                },
-                "passport_number": {
-                    "type": "integer"
-                },
-                "passport_series": {
-                    "type": "integer"
                 },
                 "password": {
                     "type": "string",
+                    "maxLength": 256,
                     "minLength": 6
                 },
                 "patronymic": {
@@ -1336,8 +1374,6 @@ const docTemplate = `{
             "required": [
                 "address",
                 "name",
-                "passport_number",
-                "passport_series",
                 "password",
                 "surname"
             ],
@@ -1359,12 +1395,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "minLength": 2
-                },
-                "passport_number": {
-                    "type": "integer"
-                },
-                "passport_series": {
-                    "type": "integer"
                 },
                 "password": {
                     "type": "string",
@@ -1399,8 +1429,6 @@ const docTemplate = `{
             "required": [
                 "address",
                 "name",
-                "passport_number",
-                "passport_series",
                 "password",
                 "surname"
             ],
@@ -1422,12 +1450,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "minLength": 2
-                },
-                "passport_number": {
-                    "type": "integer"
-                },
-                "passport_series": {
-                    "type": "integer"
                 },
                 "password": {
                     "type": "string",
@@ -1469,19 +1491,7 @@ const docTemplate = `{
                 "max_id": {
                     "type": "integer"
                 },
-                "max_passport_number": {
-                    "type": "integer"
-                },
-                "max_passport_series": {
-                    "type": "integer"
-                },
                 "min_id": {
-                    "type": "integer"
-                },
-                "min_passport_number": {
-                    "type": "integer"
-                },
-                "min_passport_series": {
                     "type": "integer"
                 },
                 "name": {
@@ -1549,8 +1559,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:80",
 	BasePath:         "/api/",
 	Schemes:          []string{},
-	Title:            "Test task for Effective Mobile",
-	Description:      "REST API for Effective Mobile",
+	Title:            "Time tracker REST API",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

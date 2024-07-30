@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/logger"
+	"github.com/armanokka/time_tracker/config"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/pkg/logger"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

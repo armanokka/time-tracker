@@ -3,10 +3,11 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	"github.com/armanokka/test_task_Effective_mobile/internal/auth"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/utils"
+	"github.com/armanokka/time_tracker/config"
+	"github.com/armanokka/time_tracker/internal/auth"
+	"github.com/armanokka/time_tracker/internal/auth/delivery/http"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/pkg/utils"
 	"github.com/golang-jwt/jwt"
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel"
@@ -120,15 +121,11 @@ func (a authUC) GetByEmail(ctx context.Context, email string) (*models.User, err
 	return a.authRepo.GetByEmail(ctx, strings.ToLower(strings.TrimSpace(email)))
 }
 
-func (a authUC) Update(ctx context.Context, user *models.User) (*models.User, error) {
+func (a authUC) Update(ctx context.Context, updates *http.UpdateRequest) (*models.User, error) {
 	ctx, span := a.tracer.Start(ctx, "authUC.Update")
 	defer span.End()
 
-	if err := user.PrepareUpdate(); err != nil {
-		return nil, nil
-	}
-
-	updatedUser, err := a.authRepo.Update(ctx, user)
+	updatedUser, err := a.authRepo.Update(ctx, updates)
 	if err != nil {
 		return nil, err
 	}

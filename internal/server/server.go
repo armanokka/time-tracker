@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"errors"
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	_ "github.com/armanokka/test_task_Effective_mobile/docs"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/logger"
+	"github.com/armanokka/time_tracker/config"
+	_ "github.com/armanokka/time_tracker/docs"
+	"github.com/armanokka/time_tracker/pkg/logger"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"

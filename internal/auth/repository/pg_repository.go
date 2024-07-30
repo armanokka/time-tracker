@@ -2,10 +2,14 @@ package repository
 
 import (
 	"context"
-	"github.com/armanokka/test_task_Effective_mobile/internal/auth"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/utils"
+	"fmt"
+	"github.com/Masterminds/squirrel"
+	"github.com/armanokka/time_tracker/internal/auth"
+	"github.com/armanokka/time_tracker/internal/auth/delivery/http"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/pkg/utils"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -30,16 +34,32 @@ func (c authRepository) Create(ctx context.Context, user *models.User) (*models.
 func (c authRepository) GetByID(ctx context.Context, id int64) (user *models.User, err error) {
 	ctx, span := c.tracer.Start(ctx, "authRepository.GetByID")
 	defer span.End()
+
+	sql, args, err := squirrel.Select("*").From(pq.QuoteIdentifier("user")).
+		Where("id = $1", id).ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("authRepository.GetByID.Select: %w", err)
+	}
+
 	user = &models.User{}
-	return user, c.client.QueryRowxContext(ctx, selectUserByIDQuery, &id).StructScan(user)
+	if err = c.client.QueryRowxContext(ctx, sql, args...).StructScan(user); err != nil {
+		return nil, fmt.Errorf("authRepository.GetByID.QueryRowxContext: %w", err)
+	}
+	return user, nil
 }
 
 func (c authRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	ctx, span := c.tracer.Start(ctx, "authRepository.GetByEmail")
 	defer span.End()
 
+	query, args, err := squirrel.Select("*").From(pq.QuoteIdentifier("user")).
+		Where("email = $1", email).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
 	var user models.User
-	if err := c.client.QueryRowxContext(ctx, selectUserByEmailQuery, &email).StructScan(&user); err != nil {
+	if err := c.client.QueryRowxContext(ctx, query, args...).StructScan(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -49,16 +69,56 @@ func (c authRepository) Delete(ctx context.Context, id int64) error {
 	ctx, span := c.tracer.Start(ctx, "authRepository.Delete")
 	defer span.End()
 
-	_, err := c.client.ExecContext(ctx, deleteUserByIDQuery, &id)
-	return err
+	query, args, err := squirrel.Delete(pq.QuoteIdentifier("user")).Where("id = $1", id).ToSql()
+	if err != nil {
+		return fmt.Errorf("authRepository.Delete.Delete: %w", err)
+	}
+
+	_, err = c.client.ExecContext(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("authRepository.Delete.ExecContext: %w", err)
+	}
+	return nil
 }
 
-func (c authRepository) Update(ctx context.Context, updates *models.User) (*models.User, error) {
+func (c authRepository) Update(ctx context.Context, updates *http.UpdateUserRequest) (*models.User, error) {
 	ctx, span := c.tracer.Start(ctx, "authRepository.Update")
 	defer span.End()
 
-	return updates, c.client.QueryRowxContext(ctx, updateUserQuery, &updates.Email, &updates.Password, &updates.Name,
-		&updates.Surname, &updates.Patronymic, &updates.Address, &updates.ID).StructScan(updates)
+	query := squirrel.Update(pq.QuoteIdentifier("user"))
+
+	if updates.Email != nil {
+		query = query.Set("email = (?)", *updates.Email)
+	}
+	if updates.Password != nil {
+		query = query.Set("password = (?)", *updates.Password)
+	}
+	if updates.Name != nil {
+		query = query.Set("name = (?)", *updates.Name)
+	}
+	if updates.Surname != nil {
+		query = query.Set("surname = (?)", *updates.Surname)
+	}
+	if updates.Address != nil {
+		query = query.Set("address = (?)", *updates.Address)
+	}
+	if updates.Patronymic != nil {
+		query = query.Set("patronymic = (?)", *updates.Patronymic)
+	}
+
+	sql, args, err := query.Where("id = ?", updates.ID).PlaceholderFormat(squirrel.Dollar).
+		Suffix("RETURNING *").ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("authRepository.Update.ToSql: %w", err)
+	}
+
+	var user models.User
+
+	if err = c.client.QueryRowxContext(ctx, sql, args...).StructScan(&user); err != nil {
+		return nil, fmt.Errorf("authRepository.Update.QueryRowxContext: %w", err)
+	}
+
+	return &user, nil
 }
 
 func (c authRepository) SearchUsers(ctx context.Context, query *utils.UsersQuery) (utils.UsersQueryResponse, error) {

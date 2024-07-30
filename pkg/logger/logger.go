@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/armanokka/test_task_Effective_mobile/config"
+	"github.com/armanokka/time_tracker/config"
 )
 
 // Logger methods interface

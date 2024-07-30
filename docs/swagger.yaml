@@ -16,7 +16,7 @@ definitions:
     required:
     - password
     type: object
-  http.UpdateRequest:
+  http.UpdateUserRequest:
     properties:
       address:
         maxLength: 100
@@ -25,13 +25,11 @@ definitions:
         maxLength: 60
         type: string
       name:
+        maxLength: 60
         minLength: 2
         type: string
-      passport_number:
-        type: integer
-      passport_series:
-        type: integer
       password:
+        maxLength: 256
         minLength: 6
         type: string
       patronymic:
@@ -93,10 +91,6 @@ definitions:
       name:
         minLength: 2
         type: string
-      passport_number:
-        type: integer
-      passport_series:
-        type: integer
       password:
         minLength: 6
         type: string
@@ -109,8 +103,6 @@ definitions:
     required:
     - address
     - name
-    - passport_number
-    - passport_series
     - password
     - surname
     type: object
@@ -138,10 +130,6 @@ definitions:
       name:
         minLength: 2
         type: string
-      passport_number:
-        type: integer
-      passport_series:
-        type: integer
       password:
         minLength: 6
         type: string
@@ -156,8 +144,6 @@ definitions:
     required:
     - address
     - name
-    - passport_number
-    - passport_series
     - password
     - surname
     type: object
@@ -176,15 +162,7 @@ definitions:
         type: integer
       max_id:
         type: integer
-      max_passport_number:
-        type: integer
-      max_passport_series:
-        type: integer
       min_id:
-        type: integer
-      min_passport_number:
-        type: integer
-      min_passport_series:
         type: integer
       name:
         type: string
@@ -216,12 +194,11 @@ info:
     email: armangokka@gmail.com
     name: API Support
     url: https://t.me/armanokka
-  description: REST API for Effective Mobile
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Test task for Effective Mobile
+  title: Time tracker REST API
   version: "1.0"
 paths:
   /projects/:
@@ -230,27 +207,17 @@ paths:
       - application/json
       description: Create project
       parameters:
-      - description: project id
-        in: path
-        name: project_id
-        required: true
-        type: string
       - description: Token that you get after authorization/registration
         in: header
         name: X-Access-Token
         required: true
         type: string
-      - description: Project name
+      - description: Project
         in: body
-        name: name
+        name: project
         required: true
         schema:
-          type: string
-      - description: Project description
-        in: body
-        name: description
-        schema:
-          type: string
+          $ref: '#/definitions/models.Project'
       produces:
       - application/json
       responses:
@@ -349,16 +316,11 @@ paths:
         name: X-Access-Token
         required: true
         type: string
-      - description: New project name
+      - description: Project updates
         in: body
-        name: name
+        name: project_updates
         schema:
-          type: string
-      - description: New project description
-        in: body
-        name: description
-        schema:
-          type: string
+          $ref: '#/definitions/models.Project'
       produces:
       - application/json
       responses:
@@ -759,6 +721,46 @@ paths:
       tags:
       - projects
     post:
+      consumes:
+      - application/json
+      description: Add project member
+      parameters:
+      - description: project id
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Token that you get after authorization/registration
+        in: header
+        name: X-Access-Token
+        required: true
+        type: string
+      - description: User id of the member you want to invite
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Add project member
+      tags:
+      - projects
+  /projects/{project_id}/users/{user_id}:
+    delete:
       description: Remove project member
       parameters:
       - description: project id
@@ -794,7 +796,6 @@ paths:
       summary: Remove project member
       tags:
       - projects
-  /projects/{project_id}/users/{user_id}:
     get:
       description: Get project member productivity
       parameters:
@@ -962,12 +963,17 @@ paths:
       - application/json
       description: Update user
       parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: string
       - description: new user info
         in: body
         name: updateBody
         required: true
         schema:
-          $ref: '#/definitions/http.UpdateRequest'
+          $ref: '#/definitions/http.UpdateUserRequest'
       - description: Token that you get after authorization/registration
         in: header
         name: X-Access-Token

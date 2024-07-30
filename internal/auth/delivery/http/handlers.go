@@ -2,12 +2,12 @@ package http
 
 import (
 	"context"
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	"github.com/armanokka/test_task_Effective_mobile/internal/auth"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/httpErrors"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/logger"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/utils"
+	"github.com/armanokka/time_tracker/config"
+	"github.com/armanokka/time_tracker/internal/auth"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/pkg/httpErrors"
+	"github.com/armanokka/time_tracker/pkg/logger"
+	"github.com/armanokka/time_tracker/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -136,7 +136,8 @@ func (a authHandlers) GetUserByID() gin.HandlerFunc {
 // @Tags		 auth
 // @Accept       json
 // @Produce      json
-// @Param		 updateBody body  http.UpdateRequest true "new user info"s
+// @Param        user_id path string true "user id"
+// @Param		 updateBody body  http.UpdateUserRequest true "new user info"s
 // @Param        X-Access-Token header string true "Token that you get after authorization/registration"
 // @Success      200  {object}  models.User
 // @Failure      400  {object}  httpErrors.RestError
@@ -149,22 +150,15 @@ func (a authHandlers) Update() gin.HandlerFunc {
 
 		userID := c.GetInt64("user_id")
 
-		update := &UpdateRequest{}
+		update := &UpdateUserRequest{}
 		if err := utils.ReadRequest(c, update); err != nil {
 			utils.LogResponseError(c, a.log, err)
 			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
 			return
 		}
+		update.ID = userID
 
-		updatedUser, err := a.authUC.Update(ctx, &models.User{
-			ID:         userID,
-			Email:      update.Email,
-			Password:   update.Password,
-			Name:       update.Name,
-			Surname:    update.Surname,
-			Patronymic: &update.Patronymic,
-			Address:    &update.Address,
-		})
+		updatedUser, err := a.authUC.Update(ctx, update)
 		if err != nil {
 			utils.LogResponseError(c, a.log, err)
 			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))

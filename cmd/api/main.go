@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	"github.com/armanokka/test_task_Effective_mobile/internal/server"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/db/postgres"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/db/redis"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/logger"
+	"github.com/armanokka/time_tracker/config"
+	"github.com/armanokka/time_tracker/internal/server"
+	"github.com/armanokka/time_tracker/pkg/db/postgres"
+	"github.com/armanokka/time_tracker/pkg/db/redis"
+	"github.com/armanokka/time_tracker/pkg/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
@@ -24,14 +24,13 @@ import (
 )
 
 /*
-1. Миграции можно накатывать с помощью либ при старте приложения. Так удастся избежать конфликта между БД и кодовой базой [+]
-5. Нет возможности обновить на пустое значение
-6. info- и debug-логов мало
+1. Сделать возможность обновить на пустое значение
+2. Поправить структуру проекта по советам Вячеслава
+3. Сделать проверку CSRF-токенов
 */
 
-// @title           Test task for Effective Mobile
+// @title           Time tracker REST API
 // @version         1.0
-// @description     REST API for Effective Mobile
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -77,26 +76,42 @@ func main() {
 	log := logger.NewApiLogger(cfg)
 	log.InitLogger()
 
-	// Creating tracer
-	shutdownTracerProvider, err := initProvider(ctx, "otel-collector:4317")
+	// Creating tracer provider
+	tracerProvider, err := initProvider(ctx, cfg.Tracer.OtelGRPCReceiverDSN)
 	if err != nil {
 		panic(err)
 	}
+	otel.SetTracerProvider(tracerProvider)
+	otel.SetTextMapPropagator(propagation.TraceContext{}) // set global propagator to tracecontext (the default is no-op).
+
 	defer func() {
-		if err = shutdownTracerProvider(ctx); err != nil {
+		if err = tracerProvider.Shutdown(ctx); err != nil {
 			log.Error("shutdown", zap.Error(err))
 		}
 	}()
-	otel.SetTracerProvider(otel.GetTracerProvider()) // setting global tracer provider
 
 	// Connecting to Postgres
-	db, err := postgres.NewPsqlDB(ctx, &cfg.Postgres)
+	db, err := postgres.NewPsqlDB(ctx, &postgres.Config{
+		User:     cfg.Postgres.User,
+		DB:       cfg.Postgres.DB,
+		Password: cfg.Postgres.Password,
+		Driver:   cfg.Postgres.Driver,
+		Host:     cfg.Postgres.Host,
+		Port:     cfg.Postgres.Port,
+	})
 	if err != nil {
 		panic(err)
 	}
 
 	// Connecting to Redis
-	rdb, err := redis.NewRedisClient(ctx, cfg)
+	rdb, err := redis.NewRedisClient(ctx, &redis.Config{
+		Addr:         cfg.Redis.Addr,
+		DB:           cfg.Redis.DB,
+		Password:     cfg.Redis.Password,
+		MinIdleConns: cfg.Redis.MinIdleConns,
+		PoolTimeout:  cfg.Redis.PoolTimeout,
+		PoolSize:     cfg.Redis.PoolSize,
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +123,7 @@ func main() {
 
 // Initializes an OTLP exporter, and configures the corresponding trace and
 // metric providers.
-func initProvider(ctx context.Context, otelGrpcReceiverDSN string) (func(context.Context) error, error) {
+func initProvider(ctx context.Context, otelGrpcReceiverDSN string) (*tracesdk.TracerProvider, error) {
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			// the service name used to display traces in backends
@@ -143,17 +158,10 @@ func initProvider(ctx context.Context, otelGrpcReceiverDSN string) (func(context
 	// span processor to aggregate spans before export.
 	bsp := tracesdk.NewBatchSpanProcessor(traceExporter)
 
-	tracerProvider := tracesdk.NewTracerProvider(
+	return tracesdk.NewTracerProvider(
 		//tracesdk.WithBatcher(exporter),
 		tracesdk.WithSampler(tracesdk.AlwaysSample()),
 		tracesdk.WithResource(res),
 		tracesdk.WithSpanProcessor(bsp),
-	)
-	otel.SetTracerProvider(tracerProvider)
-
-	// set global propagator to tracecontext (the default is no-op).
-	otel.SetTextMapPropagator(propagation.TraceContext{})
-
-	// Shutdown will flush any remaining spans and shut down the exporter.
-	return tracerProvider.Shutdown, nil
+	), nil
 }

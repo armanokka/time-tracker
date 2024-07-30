@@ -6,7 +6,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
+	"github.com/armanokka/time_tracker/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"

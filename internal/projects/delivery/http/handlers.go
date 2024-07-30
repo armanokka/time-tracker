@@ -2,12 +2,12 @@ package http
 
 import (
 	"context"
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/httpErrors"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/logger"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/utils"
+	"github.com/armanokka/time_tracker/config"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/internal/projects"
+	"github.com/armanokka/time_tracker/pkg/httpErrors"
+	"github.com/armanokka/time_tracker/pkg/logger"
+	"github.com/armanokka/time_tracker/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -64,10 +64,8 @@ func (h projectHandlers) GetByID() gin.HandlerFunc {
 // @Tags		 projects
 // @Accept       json
 // @Produce      json
-// @Param        project_id path string true "project id"
 // @Param        X-Access-Token header string true "Token that you get after authorization/registration"
-// @Param        name body string true "Project name"
-// @Param        description body string false "Project description"
+// @Param        project body   models.Project true "Project"
 // @Success      200  {object}  models.Project
 // @Failure      400  {object}  httpErrors.RestError
 // @Failure      500  {object}  httpErrors.RestError
@@ -104,8 +102,7 @@ func (h projectHandlers) Create() gin.HandlerFunc {
 // @Produce      json
 // @Param        project_id path string true "project id"
 // @Param        X-Access-Token header string true "Token that you get after authorization/registration"
-// @Param        name body string false "New project name"
-// @Param        description body string false "New project description"
+// @Param        project_updates body models.Project false "Project updates"
 // @Success      200  {object}  models.Project
 // @Failure      400  {object}  httpErrors.RestError
 // @Failure      500  {object}  httpErrors.RestError
@@ -213,7 +210,7 @@ func (h projectHandlers) AddMember() gin.HandlerFunc {
 // @Success      200  {object}  utils.Response
 // @Failure      400  {object}  httpErrors.RestError
 // @Failure      500  {object}  httpErrors.RestError
-// @Router       /projects/{project_id}/users [post]
+// @Router       /projects/{project_id}/users/{user_id} [delete]
 func (h projectHandlers) RemoveMember() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, span := h.tracer.Start(c.MustGet(utils.UserCtxKey).(context.Context), "projectHandlers.RemoveMember")

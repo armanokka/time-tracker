@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/internal/projects"
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"

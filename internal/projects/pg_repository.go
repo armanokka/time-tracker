@@ -2,7 +2,7 @@ package projects
 
 import (
 	"context"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
+	"github.com/armanokka/time_tracker/internal/models"
 )
 
 type Repository interface {

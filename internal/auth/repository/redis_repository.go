@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"encoding/json"
-	"github.com/armanokka/test_task_Effective_mobile/internal/auth"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
+	"github.com/armanokka/time_tracker/internal/auth"
+	"github.com/armanokka/time_tracker/internal/models"
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"

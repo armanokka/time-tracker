@@ -1,13 +1,13 @@
 package server
 
 import (
-	authHttp "github.com/armanokka/test_task_Effective_mobile/internal/auth/delivery/http"
-	authRepo "github.com/armanokka/test_task_Effective_mobile/internal/auth/repository"
-	authUc "github.com/armanokka/test_task_Effective_mobile/internal/auth/usecase"
-	"github.com/armanokka/test_task_Effective_mobile/internal/middleware"
-	projectsHttp "github.com/armanokka/test_task_Effective_mobile/internal/projects/delivery/http"
-	projectsRepo "github.com/armanokka/test_task_Effective_mobile/internal/projects/repository"
-	projectsUc "github.com/armanokka/test_task_Effective_mobile/internal/projects/usecase"
+	authHttp "github.com/armanokka/time_tracker/internal/auth/delivery/http"
+	authRepo "github.com/armanokka/time_tracker/internal/auth/repository"
+	authUc "github.com/armanokka/time_tracker/internal/auth/usecase"
+	"github.com/armanokka/time_tracker/internal/middleware"
+	projectsHttp "github.com/armanokka/time_tracker/internal/projects/delivery/http"
+	projectsRepo "github.com/armanokka/time_tracker/internal/projects/repository"
+	projectsUc "github.com/armanokka/time_tracker/internal/projects/usecase"
 	"github.com/gin-gonic/gin"
 )
 

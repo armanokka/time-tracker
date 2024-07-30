@@ -43,12 +43,17 @@ type CookieConfig struct {
 	HttpOnly bool   `env:"COOKIE_HTTP_ONLY" env-default:"true"`
 }
 
+type TracerConfig struct {
+	OtelGRPCReceiverDSN string `env:"OTEL_GRPC_RECEIVER_DSN" env-default:"otel-collector:4317"`
+}
+
 type Config struct {
 	Postgres PostgresConfig
 	Redis    RedisConfig
 	Cookie   CookieConfig
 	Logger   LoggerConfig
 	Server   ServerConfig
+	Tracer   TracerConfig
 }
 
 func NewConfig() (*Config, error) {

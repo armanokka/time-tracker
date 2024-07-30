@@ -27,6 +27,7 @@ var (
 	NotFound              = errors.New("Not Found")
 	Unauthorized          = errors.New("Unauthorized")
 	Forbidden             = errors.New("Forbidden")
+	ErrTokenExpired       = errors.New("Token expired")
 	PermissionDenied      = errors.New("Permission Denied")
 	ExpiredCSRFError      = errors.New("Expired CSRF token")
 	WrongCSRFToken        = errors.New("Wrong CSRF token")
@@ -163,6 +164,8 @@ func ParseErrors(err error) RestErr {
 		return parseSqlErrors(err)
 	case strings.Contains(err.Error(), "already"):
 		return NewRestErrorWithMessage(http.StatusConflict, err.Error(), err)
+	case strings.Contains(err.Error(), "token expired"):
+		return NewRestErrorWithMessage(http.StatusUnauthorized, ErrTokenExpired.Error(), err)
 	case strings.Contains(err.Error(), "unmarshal"):
 		return NewRestError(http.StatusBadRequest, BadRequest.Error(), err)
 	case strings.Contains(err.Error(), "validator"):

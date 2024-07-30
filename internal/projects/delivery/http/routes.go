@@ -1,8 +1,8 @@
 package http
 
 import (
-	"github.com/armanokka/test_task_Effective_mobile/internal/middleware"
-	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
+	"github.com/armanokka/time_tracker/internal/middleware"
+	"github.com/armanokka/time_tracker/internal/projects"
 	"github.com/gin-gonic/gin"
 )
 

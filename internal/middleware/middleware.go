@@ -3,13 +3,13 @@ package middleware
 import (
 	"database/sql"
 	"errors"
-	"github.com/armanokka/test_task_Effective_mobile/config"
-	"github.com/armanokka/test_task_Effective_mobile/internal/auth"
-	"github.com/armanokka/test_task_Effective_mobile/internal/models"
-	"github.com/armanokka/test_task_Effective_mobile/internal/projects"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/httpErrors"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/logger"
-	"github.com/armanokka/test_task_Effective_mobile/pkg/utils"
+	"github.com/armanokka/time_tracker/config"
+	"github.com/armanokka/time_tracker/internal/auth"
+	"github.com/armanokka/time_tracker/internal/models"
+	"github.com/armanokka/time_tracker/internal/projects"
+	"github.com/armanokka/time_tracker/pkg/httpErrors"
+	"github.com/armanokka/time_tracker/pkg/logger"
+	"github.com/armanokka/time_tracker/pkg/utils"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
@@ -54,7 +54,7 @@ func (m Manager) AuthJWTMiddleware() gin.HandlerFunc {
 		}
 
 		if err := m.validateJWTToken(c, token); err != nil {
-			c.AbortWithStatusJSON(403, httpErrors.NewUnauthorizedError("wrong X-Access-Token"))
+			c.AbortWithStatusJSON(httpErrors.ErrorResponse(err))
 		}
 	}
 }
