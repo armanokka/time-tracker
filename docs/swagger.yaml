@@ -846,39 +846,39 @@ paths:
       description: Search users
       parameters:
       - description: min id
-        in: path
+        in: query
         name: min_id
         type: integer
       - description: max id
-        in: path
+        in: query
         name: max_id
         type: integer
       - description: email
-        in: path
+        in: query
         name: email
         type: string
       - description: name
-        in: path
+        in: query
         name: name
         type: string
       - description: surname
-        in: path
+        in: query
         name: surname
         type: string
       - description: patronymic
-        in: path
+        in: query
         name: patronymic
         type: string
       - description: address
-        in: path
+        in: query
         name: address
         type: string
       - description: results amount limit
-        in: path
+        in: query
         name: limit
         type: integer
       - description: page
-        in: path
+        in: query
         name: page
         type: integer
       - description: Token that you get after authorization/registration
